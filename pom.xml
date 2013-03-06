@@ -30,11 +30,11 @@
 
 	<!-- scm config {{{1 -->
 	<scm>
+		<tag>HEAD</tag>
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
 		<url>https://git.shadowhunt.de/maven-plugins.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+	</scm>
 	<!-- }}}1 -->
 
 	<!-- repository config {{{1 -->
