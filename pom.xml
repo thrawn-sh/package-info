@@ -30,8 +30,8 @@
 
 	<!-- scm config {{{1 -->
 	<scm>
-		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/maven-plugins.git</connection>
-		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/maven-plugins.git</developerConnection>
+		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</connection>
+		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
 		<url>https://git.shadowhunt.de/maven-plugins.git</url>
 	</scm>
 	<!-- }}}1 -->
@@ -161,8 +161,8 @@
 				<groupId>de.shadowhunt.maven.plugins</groupId>
 				<artifactId>sonarignore-maven-plugin</artifactId>
 				<configuration>
-					<ignoreAnnotations/>
-					<forceCheckAnnotations/>
+					<ignoreAnnotations />
+					<forceCheckAnnotations />
 
 					<ignoreEquals>true</ignoreEquals>
 					<ignoreGetterAndSetter>true</ignoreGetterAndSetter>
