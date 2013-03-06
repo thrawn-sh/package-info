@@ -4,7 +4,7 @@
 
 	<groupId>de.shadowhunt.maven.plugins</groupId>
 	<artifactId>package-info-maven-plugin</artifactId>
-	<version>1.4.0</version>
+	<version>1.4.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Maven package-info.java Plugin</name>
@@ -33,7 +33,7 @@
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
 		<url>https://git.shadowhunt.de/maven-plugins.git</url>
-	  <tag>v1.4.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<!-- }}}1 -->
 
