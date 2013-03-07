@@ -33,7 +33,7 @@
 		<tag>HEAD</tag>
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
-		<url>https://git.shadowhunt.de/maven-plugins.git</url>
+		<url>https://git.shadowhunt.de/package-info-maven-plugin.git</url>
 	</scm>
 	<!-- }}}1 -->
 
