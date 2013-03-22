@@ -75,7 +75,7 @@ public class PackageInfoPlugin extends AbstractMojo {
 		final String rootPath = root.getAbsolutePath();
 		final String filePath = file.getAbsolutePath();
 		final String withoutPrefix = StringUtils.removeStart(filePath, rootPath);
-		return StringUtils.removeStart(withoutPrefix, File.separator);
+		return StringUtils.remove(filePath, rootPath);
 	}
 
 	/**
