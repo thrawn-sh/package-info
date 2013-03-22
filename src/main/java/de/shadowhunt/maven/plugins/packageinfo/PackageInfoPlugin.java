@@ -72,10 +72,9 @@ public class PackageInfoPlugin extends AbstractMojo {
 	}
 
 	static String toRelativePath(final File root, final File file) {
-		final String rootPath = root.getAbsolutePath();
+		final String rootPath = root.getAbsolutePath() + "/";
 		final String filePath = file.getAbsolutePath();
-		final String withoutRootPrefix = StringUtils.stripStart(filePath, rootPath);
-		return StringUtils.stripStart(withoutRootPrefix, File.separator);
+		return StringUtils.remove(filePath, rootPath);
 	}
 
 	/**
