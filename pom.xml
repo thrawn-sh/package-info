@@ -63,7 +63,7 @@
 				<plugin>
 					<groupId>de.shadowhunt.maven.plugins</groupId>
 					<artifactId>package-info-maven-plugin</artifactId>
-					<version>1.4.0</version>
+					<version>1.4.1</version>
 				</plugin>
 				<plugin>
 					<groupId>de.shadowhunt.maven.plugins</groupId>
