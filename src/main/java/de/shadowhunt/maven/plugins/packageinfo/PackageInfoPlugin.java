@@ -13,12 +13,18 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "package-info", defaultPhase = LifecyclePhase.GENERATE_SOURCES, threadSafe = true)
+/**
+ * Generate package-info.java for each package that doesn't already contain one.<br/>
+ * Call <code>mvn package-info:package-info</code> to generate missing package-info.java.
+ */
+@Mojo(name = "package-info", threadSafe = true)
+@Execute(phase = LifecyclePhase.GENERATE_SOURCES)
 public class PackageInfoPlugin extends AbstractMojo {
 
 	static final FileFilter JAVA_FILTER = new FileFilter() {
@@ -79,21 +85,21 @@ public class PackageInfoPlugin extends AbstractMojo {
 	}
 
 	/**
-	 * Annotations that are placed into each generated package-info.java file
+	 * Annotations that are placed into each generated package-info.java file.
 	 */
-	@Parameter(readonly = true)
+	@Parameter
 	private List<String> annotationLines;
 
 	/**
-	 * The source directories containing the sources to be compiled.
+	 * The source directories containing the sources to be checked for missing package-info.java.
 	 */
-	@Parameter(defaultValue = "${project.compileSourceRoots}", required = true, readonly = true)
+	@Parameter(defaultValue = "${project.compileSourceRoots}", required = true)
 	private List<String> compileSourceRoots;
 
 	/**
 	 * Specify where to place generated package-info.java files.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/generated-sources/package-info", required = true, readonly = true)
+	@Parameter(defaultValue = "${project.build.directory}/generated-sources/package-info", required = true)
 	private File outputDirectory;
 
 	/**

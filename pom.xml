@@ -7,7 +7,10 @@
 	<version>1.4.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
+	<!-- project information {{{1 -->
 	<name>Maven package-info.java Plugin</name>
+	<description>Autogenerates package-info.java files with arbitratry headers</description>
+	<url>http://dev.shadowhunt.de/package-info-maven-plugin</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<organization>
@@ -15,34 +18,36 @@
 		<url>http://www.shadowhunt.de</url>
 	</organization>
 
-	<prerequisites>
-		<maven>2.2.1</maven>
-	</prerequisites>
+	<!--licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses-->
 
-	<properties>
-		<eclipse.config>http://dev.shadowhunt.de/ide/eclipse</eclipse.config>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	<developers>
+		<developer>
+			<id>thrawn</id>
+			<name>Thrawn</name>
+			<email>thrawn@shadowhunt.de</email>
+			<timezone>Europe/Berlin</timezone>
+		</developer>
+	</developers>
+	<!-- }}}1 -->
 
-		<maven.api.version>3.0</maven.api.version>
-		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-
-		<sonar.ignorecoverage.configFile>${project.basedir}/target/coverage.ignore</sonar.ignorecoverage.configFile>
-		<sonar.ignoreviolations.configFile>${project.basedir}/target/violations.ignore</sonar.ignoreviolations.configFile>
-	</properties>
-
-	<!-- scm config {{{1 -->
+	<!-- environment information {{{1 -->
 	<scm>
 		<tag>HEAD</tag>
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
 		<url>https://git.shadowhunt.de/package-info-maven-plugin.git</url>
 	</scm>
-	<!-- }}}1 -->
 
-	<!-- repository config {{{1 -->
+	<prerequisites>
+		<maven>2.2.1</maven>
+	</prerequisites>
+
 	<distributionManagement>
 		<repository>
 			<id>shadowhunt</id>
@@ -54,10 +59,31 @@
 			<name>Shadowhunt Local Snapshot Repository</name>
 			<url>http://maven.shadowhunt.de/local-snapshot</url>
 		</snapshotRepository>
+		<site>
+			<id>www.shadowhunt.de</id>
+			<url>TODO</url>
+		</site>
 	</distributionManagement>
 	<!-- }}}1 -->
 
+	<properties>
+		<eclipse.config>http://dev.shadowhunt.de/ide/eclipse</eclipse.config>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<maven.api.version>3.0</maven.api.version>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco-ut.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.itReportPath>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+
+		<sonar.ignorecoverage.configFile>${project.basedir}/target/coverage.ignore</sonar.ignorecoverage.configFile>
+		<sonar.ignoreviolations.configFile>${project.basedir}/target/violations.ignore</sonar.ignoreviolations.configFile>
+	</properties>
+
 	<build>
+		<defaultGoal>install</defaultGoal>
+
 		<pluginManagement><!-- {{{1 -->
 			<!-- keep list ordered by groupId and artifactId -->
 			<plugins>
@@ -69,7 +95,7 @@
 				<plugin>
 					<groupId>de.shadowhunt.maven.plugins</groupId>
 					<artifactId>sonarignore-maven-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.4.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -79,12 +105,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.0</version>
+					<version>3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.6</version>
+					<version>2.8</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -95,6 +121,16 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
 					<version>2.9</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.16</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -114,7 +150,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
+					<version>2.9.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -124,7 +160,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.4</version>
+					<version>2.4.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -134,7 +170,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -149,12 +185,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.13</version>
+					<version>2.16</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>1.5</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
-					<version>2.0</version>
+					<version>2.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -195,6 +236,7 @@
 						<ignoreToString>true</ignoreToString>
 					</globalSettings>
 					<coverageSettings>
+						<ignoreUtilityConstructors>true</ignoreUtilityConstructors>
 						<output>${sonar.ignorecoverage.configFile}</output>
 					</coverageSettings>
 					<violationSettings>
@@ -263,6 +305,38 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<configuration>
+					<keyname>77103E0B</keyname><!-- shadowhund package -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<argLine>${jacoco.agent.argLineIT}</argLine>
+					<printSummary>false</printSummary>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
 				<configuration>
 					<createChecksum>true</createChecksum>
@@ -312,7 +386,6 @@
 				<executions>
 					<execution>
 						<id>mojo-descriptor</id>
-						<phase>process-classes</phase>
 						<goals>
 							<goal>descriptor</goal>
 						</goals>
@@ -350,35 +423,91 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<printSummary>false</printSummary>
-					<argLine>${jacoco.agent.argLine}</argLine>
+					<argLine>${jacoco.agent.argLineUT}</argLine>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<!-- Use the older JUnit 4 provider -->
-						<artifactId>surefire-junit4</artifactId>
-						<version>2.12</version>
-					</dependency>
-				</dependencies>
 			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
-					<propertyName>jacoco.agent.argLine</propertyName>
-					<destFile>${sonar.jacoco.reportPath}</destFile>
+					<verbose>false</verbose>
 				</configuration>
 				<executions>
 					<execution>
+						<id>add-licence</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<configuration>
+							<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+							<licenseName>apache_v2</licenseName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin-->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>ut</id>
+						<phase>initialize</phase>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+						<configuration>
+							<propertyName>jacoco.agent.argLineUT</propertyName>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>it</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>jacoco.agent.argLineIT</propertyName>
+							<destFile>${sonar.jacoco.itReportPath}</destFile>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins><!-- }}}1 -->
 	</build>
 
+	<reporting>
+		<plugins><!-- {{{1 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>3.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>summary</report>
+							<report>dependency-info</report>
+							<report>dependencies</report>
+							<report>plugins</report>
+							<report>license</report>
+
+							<report>dependency-convergence</report>
+							<report>dependency-management</report>
+							<report>modules</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins><!-- }}}1 -->
+	</reporting>
+
+	<!-- dependencies {{{1 -->
 	<dependencies>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -413,4 +542,5 @@
 			<version>${maven.api.version}</version>
 		</dependency>
 	</dependencies>
+	<!-- }}}1 -->
 </project>
