@@ -10,7 +10,7 @@
 	<!-- project information {{{1 -->
 	<name>Maven package-info.java Plugin</name>
 	<description>Autogenerates package-info.java files with arbitratry headers</description>
-	<url>http://dev.shadowhunt.de/package-info-maven-plugin</url>
+	<url>http://dev.shadowhunt.de/package-info</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<organization>
@@ -41,7 +41,7 @@
 		<tag>HEAD</tag>
 		<connection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin</connection>
 		<developerConnection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin</developerConnection>
-		<url>https://scm.shadowhunt.de/package-info</url>
+		<url>https://scm.shadowhunt.de/package-info-maven-plugin</url>
 	</scm>
 
 	<prerequisites>
@@ -194,7 +194,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.6.3.201306030806</version>
+					<version>0.6.4.201312101107</version>
 				</plugin>
 			</plugins>
 		</pluginManagement><!-- }}}1 -->
