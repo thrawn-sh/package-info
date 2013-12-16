@@ -10,7 +10,7 @@
 	<!-- project information {{{1 -->
 	<name>Maven package-info.java Plugin</name>
 	<description>Autogenerates package-info.java files with arbitratry headers</description>
-	<url>http://dev.shadowhunt.de/package-info</url>
+	<url>http://dev.shadowhunt.de/package-info-maven-plugin</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<organization>
@@ -61,7 +61,7 @@
 		</snapshotRepository>
 		<site>
 			<id>shadowhunt.site</id>
-			<url>scp://dev.shadowhunt.de/sites/package-info</url>
+			<url>scp://dev.shadowhunt.de/sites/package-info-maven-plugin</url>
 		</site>
 	</distributionManagement>
 	<!-- }}}1 -->
