@@ -50,9 +50,9 @@
 
 	<distributionManagement>
 		<repository>
-			<id>shadowhunt</id>
-			<name>Shadowhunt Local Repository</name>
-			<url>https://maven.shadowhunt.de/local-release</url>
+			<id>sonatype</id>
+			<name>Sonatype (Maven Central) Staging Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 		<snapshotRepository>
 			<id>shadowhunt</id>
