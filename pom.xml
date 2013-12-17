@@ -87,6 +87,11 @@
 			<!-- keep list ordered by groupId and artifactId -->
 			<plugins>
 				<plugin>
+					<groupId>de.shadowhunt.maven.plugins</groupId>
+					<artifactId>sonarignore-maven-plugin</artifactId>
+					<version>3.4.2</version>
+				</plugin>
+				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>2.4</version>
