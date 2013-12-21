@@ -20,30 +20,36 @@
 ~~ #L%
 ~~~
  ------
- Introduction
+ Examples
  ------
  Shadowhunt
  ------
  2013-12-20
  ------
 
-Shadowhunt Package-Info Plugin
+Examples
 
-	This plugin autogenerates package-info.java files with arbitrary
-	headers (Annotations)
+* Annotate all packages with <<<ParametersAreNonnullByDefault>>> annotations
 
-* Goals Overview
++-----+
+<plugins>
+    <plugin>
+        <groupId>de.shadowhunt.maven.plugins</groupId>
+        <artifactId>package-info-maven-plugin</artifactId>
+        <configuration>
+            <annotationLines>
+                <annotationLine>@javax.annotation.ParametersAreNonnullByDefault</annotationLine>
+            </annotationLines>
+        </configuration>
+        <executions>
+            <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                    <goal>package-info</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
++-----+
 
-	The following goals are meant to participate in the default build
-	lifecycle:
-
-	* {{{./package-info-mojo.html}package-info:package-info}} Generates package-info.java.
-
-* Usage
-
-	Instructions on how to use the Package-Info Maven Plugin can be found {{{./usage.html}here}}.
-
-* Examples
-
-	To provide you with better understanding of some usages of the
-	Plugin, you can take a look at the following {{{./examples.html}examples}}.

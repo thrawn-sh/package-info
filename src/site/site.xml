@@ -21,7 +21,7 @@
   #L%
   -->
 
-<project name="Shadowhunt Packageinfo">
+<project name="Shadowhunt Package Info">
 
 	<publishDate position="right"/>
 	<version position="right"/>
@@ -35,13 +35,14 @@
 	<body>
 		<breadcrumbs>
 			<item name="Shadowhunt" href="http://dev.shadowhunt.de/" />
-			<item name="Packageinfo" href="index.html"/>
+			<item name="Package Info" href="index.html"/>
 		</breadcrumbs>
 
 		<menu name="Overview">
 			<item name="Introduction" href="index.html"/>
 			<item name="Goals" href="plugin-info.html"/>
 			<item name="Usage" href="usage.html"/>
+			<item name="Examples" href="examples.html"/>
 		</menu>
 
 		<menu ref="reports"/>
