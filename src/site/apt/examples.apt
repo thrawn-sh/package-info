@@ -29,7 +29,7 @@
 
 Examples
 
-* Annotate all packages with <<<ParametersAreNonnullByDefault>>> annotations
+	Annotate all packages with <<<ParametersAreNonnullByDefault>>> annotations
 
 +-----+
 <plugins>
