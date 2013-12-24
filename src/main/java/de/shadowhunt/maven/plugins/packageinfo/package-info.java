@@ -20,6 +20,5 @@
  * #L%
  */
 @de.shadowhunt.annotation.ReturnValuesAreNonnullByDefault
-@javax.annotation.ParametersAreNonnullByDefault
-package de.shadowhunt.maven.plugins.packageinfo;
+@javax.annotation.ParametersAreNonnullByDefault package de.shadowhunt.maven.plugins.packageinfo;
 
