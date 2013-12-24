@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This file is part of Maven package-info.java Plugin.
+
+    Maven package-info.java Plugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Maven package-info.java Plugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Maven package-info.java Plugin.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -86,6 +104,11 @@
         <pluginManagement><!-- {{{1 -->
             <!-- keep list ordered by groupId and artifactId -->
             <plugins>
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
                 <plugin>
                     <groupId>de.shadowhunt.maven.plugins</groupId>
                     <artifactId>sonarignore-maven-plugin</artifactId>
@@ -193,11 +216,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>1.5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
                     <version>2.1</version>
                 </plugin>
@@ -267,8 +285,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <configuration>
-                    <keyname>77103E0B</keyname>
                     <!-- shadowhunt package -->
+                    <keyname>77103E0B</keyname>
                     <useAgent>true</useAgent>
                 </configuration>
                 <executions>
@@ -430,22 +448,22 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <verbose>false</verbose>
+                    <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header>
+                    <properties>
+                        <owner>${project.organization.name}</owner>
+                        <year>${project.inceptionYear}</year>
+                        <email>dev@shadowhunt.de</email>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>add-licence</id>
                         <phase>process-sources</phase>
                         <goals>
-                            <goal>update-file-header</goal>
+                            <goal>format</goal>
                         </goals>
-                        <configuration>
-                            <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-                            <licenseName>gpl_v3</licenseName>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
