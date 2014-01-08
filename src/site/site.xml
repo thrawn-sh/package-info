@@ -60,6 +60,7 @@
             <item name="Goals" href="plugin-info.html" />
             <item name="Usage" href="usage.html" />
             <item name="Examples" href="examples.html" />
+            <item name="Download" href="download.html" />
         </menu>
 
         <menu ref="reports" />
