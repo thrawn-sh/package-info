@@ -42,19 +42,19 @@ public class PackageInfoPluginTest {
     }
 
     @Test
-    public void toRelativePathTest() {
-        final File root = new File("/root/");
-        Assert.assertEquals("de/shadowhunt/maven", PackageInfoPlugin.toRelativePath(root, new File("/root/de/shadowhunt/maven/")));
-        Assert.assertEquals("", PackageInfoPlugin.toRelativePath(root, root));
-    }
-
-    @Test
     public void path2PackageNameTest() {
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("/de/shadowhunt/maven/"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("de/shadowhunt/maven/"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("/de/shadowhunt/maven"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("de/shadowhunt/maven"));
         Assert.assertEquals("", PackageInfoPlugin.path2PackageName(""));
+    }
+
+    @Test
+    public void toRelativePathTest() {
+        final File root = new File("/root/");
+        Assert.assertEquals("de/shadowhunt/maven", PackageInfoPlugin.toRelativePath(root, new File("/root/de/shadowhunt/maven/")));
+        Assert.assertEquals("", PackageInfoPlugin.toRelativePath(root, root));
     }
 
     //	@Test
