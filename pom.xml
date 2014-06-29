@@ -22,7 +22,7 @@
 
     <groupId>de.shadowhunt.maven.plugins</groupId>
     <artifactId>package-info-maven-plugin</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
     <packaging>maven-plugin</packaging>
 
     <!-- project information {{{1 -->
