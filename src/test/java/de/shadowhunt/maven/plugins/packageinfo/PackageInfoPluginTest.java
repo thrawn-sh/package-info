@@ -19,6 +19,7 @@ package de.shadowhunt.maven.plugins.packageinfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.project.MavenProject;
@@ -32,6 +33,69 @@ public class PackageInfoPluginTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Test
+    public void containsFilesTest() throws IOException {
+        Assert.assertFalse("null must not contain files", PackageInfoPlugin.containsFiles(null, PackageInfoPlugin.JAVA_FILTER));
+        Assert.assertFalse("empty must not contain files", PackageInfoPlugin.containsFiles(new File[0], PackageInfoPlugin.JAVA_FILTER));
+
+        File classFile = temporaryFolder.newFile("a.class");
+        Assert.assertFalse("class must not contain files", PackageInfoPlugin.containsFiles(new File[] { classFile }, PackageInfoPlugin.JAVA_FILTER));
+
+        File javaFile = temporaryFolder.newFile("b.java");
+        Assert.assertTrue("java must contain files", PackageInfoPlugin.containsFiles(new File[] { javaFile }, PackageInfoPlugin.JAVA_FILTER));
+    }
+
+    @Test
+    public void doesFileAlreadyExistInSourceRootsTest() throws IOException {
+        final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        final List<String> compileSourceRoots = Arrays.asList(temporaryFolder.getRoot().getPath());
+        plugin.setCompileSourceRoots(compileSourceRoots);
+
+        temporaryFolder.newFolder("net");
+        temporaryFolder.newFolder("net/example");
+        temporaryFolder.newFile("net/example/package-info.java");
+        Assert.assertTrue("package-info.java must exists", plugin.doesFileAlreadyExistInSourceRoots("net/example/package-info.java"));
+
+        Assert.assertFalse("\"package-info.java must not exists\"", plugin.doesFileAlreadyExistInSourceRoots("net/example/foo/package-info.java"));
+    }
+
+    @Test
+    public void generateDefaultPackageInfoTest() throws IOException {
+        final PackageInfoPlugin plugin = new PackageInfoPlugin();
+
+        String annotation = "test";
+
+        File source = temporaryFolder.newFolder("source");
+        File output = temporaryFolder.newFolder("output");
+        plugin.setOutputDirectory(output);
+        plugin.setCompileSourceRoots(Arrays.asList(source.getPath()));
+        plugin.setAnnotationLines(Arrays.asList(annotation));
+
+        { // default package
+            File defaultPackageInfo = new File(output, "package-info.java");
+            plugin.generateDefaultPackageInfo(""); // default package
+            Assert.assertFalse("no package-info.java for default package", defaultPackageInfo.isFile());
+        }
+
+        { // existing
+            File targetPackageInfo = new File(output, "package-info.java");
+            temporaryFolder.newFolder("source/net");
+            temporaryFolder.newFolder("source/net/example");
+            File sourcePackageInfo = temporaryFolder.newFile("source/net/example/package-info.java");
+
+            plugin.generateDefaultPackageInfo("net/example");
+            Assert.assertFalse("no package-info.java for net/example package", targetPackageInfo.isFile());
+        }
+
+        {
+            File targetPackageInfo = new File(output, "net/example/foo/package-info.java");
+
+            Assert.assertFalse("no package-info.java for default package", targetPackageInfo.isFile());
+            plugin.generateDefaultPackageInfo("net/example/foo");
+            Assert.assertTrue("package-info.java for default package", targetPackageInfo.isFile());
+        }
+    }
 
     @Test
     public void isEmptyArrayTest() {
@@ -62,6 +126,9 @@ public class PackageInfoPluginTest {
 
         final File classFile = temporaryFolder.newFile("d.class");
         Assert.assertFalse("JAVA_FILTER must not accept d.class", PackageInfoPlugin.JAVA_FILTER.accept(classFile));
+
+        final File folder = temporaryFolder.newFolder("folder");
+        Assert.assertFalse("JAVA_FILTER must not accept a folder", PackageInfoPlugin.JAVA_FILTER.accept(folder));
     }
 
     @Test
