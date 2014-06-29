@@ -17,13 +17,21 @@
 package de.shadowhunt.maven.plugins.packageinfo;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 
 public class PackageInfoPluginTest {
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void isEmptyArrayTest() {
@@ -42,6 +50,32 @@ public class PackageInfoPluginTest {
     }
 
     @Test
+    public void javaFilterTest() throws IOException {
+        final File javaFile = temporaryFolder.newFile("a.java");
+        Assert.assertTrue("JAVA_FILTER must accept a.java", PackageInfoPlugin.JAVA_FILTER.accept(javaFile));
+
+        final File JAVAFile = temporaryFolder.newFile("b.JAVA");
+        Assert.assertTrue("JAVA_FILTER must accept b.JAVA", PackageInfoPlugin.JAVA_FILTER.accept(JAVAFile));
+
+        final File JaVaFile = temporaryFolder.newFile("c.JaVa");
+        Assert.assertTrue("JAVA_FILTER must accept c.JaVa", PackageInfoPlugin.JAVA_FILTER.accept(JaVaFile));
+
+        final File classFile = temporaryFolder.newFile("d.class");
+        Assert.assertFalse("JAVA_FILTER must not accept d.class", PackageInfoPlugin.JAVA_FILTER.accept(classFile));
+    }
+
+    @Test
+    public void makeFileAbsoluteTest() throws IOException {
+        final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        final MavenProject project = Mockito.mock(MavenProject.class);
+        Mockito.when(project.getBasedir()).thenReturn(temporaryFolder.getRoot());
+        plugin.setProject(project);
+
+        File expected = new File(temporaryFolder.getRoot(), "src/main/java/net/example/a.java");
+        Assert.assertEquals("files must match", expected, plugin.makeFileAbsolute(new File("src/main/java/net/example/a.java")));
+    }
+
+    @Test
     public void path2PackageNameTest() {
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("/de/shadowhunt/maven/"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("de/shadowhunt/maven/"));
@@ -56,12 +90,4 @@ public class PackageInfoPluginTest {
         Assert.assertEquals("de/shadowhunt/maven", PackageInfoPlugin.toRelativePath(root, new File("/root/de/shadowhunt/maven/")));
         Assert.assertEquals("", PackageInfoPlugin.toRelativePath(root, root));
     }
-
-    //	@Test
-    //	public void javaFilterTest() {
-    //		Assert.assertTrue(PackageInfoPlugin.JAVA_FILTER.accept(new File("a.java")));
-    //		Assert.assertTrue(PackageInfoPlugin.JAVA_FILTER.accept(new File("a.JAVA")));
-    //		Assert.assertTrue(PackageInfoPlugin.JAVA_FILTER.accept(new File("a.JaAa")));
-    //		Assert.assertFalse(PackageInfoPlugin.JAVA_FILTER.accept(new File("a.class")));
-    //	}
 }

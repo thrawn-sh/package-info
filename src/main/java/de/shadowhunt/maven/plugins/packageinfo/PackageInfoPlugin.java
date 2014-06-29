@@ -109,7 +109,7 @@ public class PackageInfoPlugin extends AbstractMojo {
     /**
      * The source directories containing the sources to be checked for missing package-info.java.
      */
-    @Parameter(defaultValue = "${project.compileSourceRoots}", required = true)
+    @Parameter(defaultValue = "${project.compileSourceRoots}", required = true, readonly = true)
     private List<String> compileSourceRoots;
 
     /**
@@ -124,9 +124,10 @@ public class PackageInfoPlugin extends AbstractMojo {
     @Component
     protected MavenProject project;
 
-    boolean doesFileAlreadyExistinSourceRoots(final String filename) {
+    boolean doesFileAlreadyExistInSourceRoots(final String filename) {
         for (final String compileSourceRoot : compileSourceRoots) {
-            final File file = new File(compileSourceRoot + filename);
+            final File absoluteCompileSourceRootFolder = makeFileAbsolute(new File(compileSourceRoot));
+            final File file = new File(absoluteCompileSourceRootFolder, filename);
             if (file.isFile()) {
                 return true;
             }
@@ -145,15 +146,16 @@ public class PackageInfoPlugin extends AbstractMojo {
 
         try {
             for (final String compileSourceRoot : compileSourceRoots) {
-                log.debug("checking " + compileSourceRoot + " for missing package-info.java files");
-                final File root = new File(compileSourceRoot);
+                final File root = makeFileAbsolute(new File(compileSourceRoot));
+                log.debug("checking " + root + " for missing package-info.java files");
                 processFolder(root, root);
             }
         } catch (final IOException e) {
             throw new MojoExecutionException("could not generate package-info.java", e);
         }
 
-        final String outputPath = outputDirectory.getAbsolutePath();
+        final File absoluteOutputDirectory = makeFileAbsolute(outputDirectory);
+        final String outputPath = absoluteOutputDirectory.getAbsolutePath();
         if (!project.getCompileSourceRoots().contains(outputPath)) {
             project.addCompileSourceRoot(outputPath);
         }
@@ -166,12 +168,13 @@ public class PackageInfoPlugin extends AbstractMojo {
         }
 
         final String filename = relativePath + File.separator + "package-info.java";
-        if (doesFileAlreadyExistinSourceRoots(filename)) {
+        if (doesFileAlreadyExistInSourceRoots(filename)) {
             // don't generate file in outputDirectory if it already exists in one of the compileSourceRoots
             return;
         }
 
-        final File packageInfo = new File(outputDirectory, filename);
+        final File absoluteOutputDirectory = makeFileAbsolute(outputDirectory);
+        final File packageInfo = new File(absoluteOutputDirectory, filename);
         createNecesarryDirectories(packageInfo);
 
         final PrintWriter pw = new PrintWriter(packageInfo);
@@ -193,6 +196,22 @@ public class PackageInfoPlugin extends AbstractMojo {
 
     public List<String> getCompileSourceRoots() {
         return compileSourceRoots;
+    }
+
+    public File getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public MavenProject getProject() {
+        return project;
+    }
+
+    final File makeFileAbsolute(final File file) {
+        if (file.isAbsolute()) {
+            return file;
+        }
+
+        return new File(project.getBasedir(), file.getPath());
     }
 
     void processFolder(final File file, final File root) throws IOException {
@@ -219,5 +238,13 @@ public class PackageInfoPlugin extends AbstractMojo {
 
     public void setCompileSourceRoots(final List<String> compileSourceRoots) {
         this.compileSourceRoots = compileSourceRoots;
+    }
+
+    public void setOutputDirectory(final File outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
+
+    public void setProject(final MavenProject project) {
+        this.project = project;
     }
 }
