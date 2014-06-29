@@ -71,7 +71,7 @@ public class PackageInfoPluginTest {
         Mockito.when(project.getBasedir()).thenReturn(temporaryFolder.getRoot());
         plugin.setProject(project);
 
-        File expected = new File(temporaryFolder.getRoot(), "src/main/java/net/example/a.java");
+        final File expected = new File(temporaryFolder.getRoot(), "src/main/java/net/example/a.java");
         Assert.assertEquals("files must match", expected, plugin.makeFileAbsolute(new File("src/main/java/net/example/a.java")));
     }
 
