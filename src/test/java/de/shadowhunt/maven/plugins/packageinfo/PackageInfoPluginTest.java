@@ -157,4 +157,28 @@ public class PackageInfoPluginTest {
         Assert.assertEquals("de/shadowhunt/maven", PackageInfoPlugin.toRelativePath(root, new File("/root/de/shadowhunt/maven/")));
         Assert.assertEquals("", PackageInfoPlugin.toRelativePath(root, root));
     }
+
+    @Test
+    public void createNecessaryDirectoriesTest() throws IOException {
+        { // existing folder
+            File folder = temporaryFolder.getRoot();
+            Assert.assertTrue("folder exists", folder.isDirectory());
+            PackageInfoPlugin.createNecessaryDirectories(folder);
+            Assert.assertTrue("folder exists", folder.isDirectory());
+        }
+
+        { // newly created folder
+            File folder = new File(temporaryFolder.getRoot(), "a/b/c/d");
+            Assert.assertFalse("folder doesn't exists", folder.isDirectory());
+            PackageInfoPlugin.createNecessaryDirectories(folder);
+            Assert.assertTrue("folder exists", folder.getParentFile().isDirectory());
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void createNecessaryDirectoriesExceptionTest() throws IOException {
+        File parent = temporaryFolder.newFile("a");
+        File file = new File(parent, "b");
+        PackageInfoPlugin.createNecessaryDirectories(file);
+    }
 }

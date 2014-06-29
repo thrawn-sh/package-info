@@ -68,7 +68,7 @@ public class PackageInfoPlugin extends AbstractMojo {
         return false;
     }
 
-    static void createNecesarryDirectories(final File file) throws IOException {
+    static void createNecessaryDirectories(final File file) throws IOException {
         final File parent = file.getParentFile();
         if (parent.isDirectory()) {
             return;
@@ -175,7 +175,7 @@ public class PackageInfoPlugin extends AbstractMojo {
 
         final File absoluteOutputDirectory = makeFileAbsolute(outputDirectory);
         final File packageInfo = new File(absoluteOutputDirectory, filename);
-        createNecesarryDirectories(packageInfo);
+        createNecessaryDirectories(packageInfo);
 
         final PrintWriter pw = new PrintWriter(packageInfo);
         for (final String annotationLine : annotationLines) {
