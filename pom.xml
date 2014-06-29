@@ -277,6 +277,7 @@
                         </goals>
                         <configuration>
                             <failOnWarning>true</failOnWarning>
+                            <outputXML>true</outputXML>
                         </configuration>
                     </execution>
                 </executions>
