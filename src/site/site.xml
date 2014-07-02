@@ -17,7 +17,9 @@
     along with Maven package-info.java Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<project name="Shadowhunt Package Info">
+<project name="Shadowhunt Package Info" xmlns="http://maven.apache.org/DECORATION/1.4.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.4.0 http://maven.apache.org/xsd/decoration-1.4.0.xsd">
 
     <publishDate position="right" />
     <version position="right" />
