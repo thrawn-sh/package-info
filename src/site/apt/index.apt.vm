@@ -16,13 +16,28 @@
  *#
 
  ------
- Download
+ Introduction
  ------
  Shadowhunt
  ------
 
-Download
+Shadowhunt Package-Info Plugin
 
-	Version ${project.version} of ${project.name} can be found at
-	{{{http://search.maven.org/#artifactdetails|${project.groupId}|${project.artifactId}|${project.version}|maven-plugin}Maven
-	Central}}
+	This plugin autogenerates package-info.java files with arbitrary
+	headers (Annotations)
+
+* Goals Overview
+
+	The following goals are meant to participate in the default build
+	lifecycle:
+
+	* {{{./package-info-mojo.html}package-info:package-info}} Generates package-info.java.
+
+* Usage
+
+	Instructions on how to use the Package-Info Maven Plugin can be found {{{./usage.html}here}}.
+
+* Examples
+
+	To provide you with better understanding of some usages of the
+	Plugin, you can take a look at the following {{{./examples.html}examples}}.
