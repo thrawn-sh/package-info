@@ -28,12 +28,12 @@
     <!-- project information {{{1 -->
     <name>Maven package-info.java Plugin</name>
     <description>Autogenerates package-info.java files with arbitrary headers</description>
-    <url>http://dev.shadowhunt.de/package-info-maven-plugin</url>
+    <url>https://dev.shadowhunt.de/package-info-maven-plugin</url>
     <inceptionYear>2012</inceptionYear>
 
     <organization>
         <name>shadowhunt</name>
-        <url>http://www.shadowhunt.de</url>
+        <url>https://www.shadowhunt.de</url>
     </organization>
 
     <licenses>
