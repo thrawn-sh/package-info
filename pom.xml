@@ -59,7 +59,7 @@
         <tag>HEAD</tag>
         <connection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin</connection>
         <developerConnection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin</developerConnection>
-        <url>https://scm.shadowhunt.de/package-info-maven-plugin</url>
+        <url>https://github.com/thrawn-sh/package-info</url>
     </scm>
 
     <prerequisites>
