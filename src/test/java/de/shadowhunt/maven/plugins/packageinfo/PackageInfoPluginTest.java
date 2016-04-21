@@ -52,8 +52,7 @@ public class PackageInfoPluginTest {
         final List<String> compileSourceRoots = Arrays.asList(temporaryFolder.getRoot().getPath());
         plugin.setCompileSourceRoots(compileSourceRoots);
 
-        temporaryFolder.newFolder("net");
-        temporaryFolder.newFolder("net/example");
+        temporaryFolder.newFolder("net", "example");
         temporaryFolder.newFile("net/example/package-info.java");
         Assert.assertTrue("package-info.java must exists", plugin.doesFileAlreadyExistInSourceRoots("net/example/package-info.java"));
 
@@ -80,8 +79,7 @@ public class PackageInfoPluginTest {
 
         { // existing
             File targetPackageInfo = new File(output, "package-info.java");
-            temporaryFolder.newFolder("source/net");
-            temporaryFolder.newFolder("source/net/example");
+            temporaryFolder.newFolder("source", "net", "example");
             File sourcePackageInfo = temporaryFolder.newFile("source/net/example/package-info.java");
 
             plugin.generateDefaultPackageInfo("net/example");
