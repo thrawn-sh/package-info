@@ -28,19 +28,17 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 /**
  * Generate package-info.java for each package that doesn't already contain one.<br/>
  * Call <code>mvn package-info:package-info</code> to generate missing package-info.java.
  */
-@Mojo(name = "package-info", threadSafe = true)
-@Execute(phase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo(name = "package-info", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class PackageInfoPlugin extends AbstractMojo {
 
     static final FileFilter JAVA_FILTER = new FileFilter() {
@@ -121,7 +119,7 @@ public class PackageInfoPlugin extends AbstractMojo {
     /**
      * The project currently being built.
      */
-    @Component
+    @Parameter(property = "project", required = true, readonly = true)
     protected MavenProject project;
 
     boolean doesFileAlreadyExistInSourceRoots(final String filename) {
@@ -156,9 +154,7 @@ public class PackageInfoPlugin extends AbstractMojo {
 
         final File absoluteOutputDirectory = makeFileAbsolute(outputDirectory);
         final String outputPath = absoluteOutputDirectory.getAbsolutePath();
-        if (!project.getCompileSourceRoots().contains(outputPath)) {
-            project.addCompileSourceRoot(outputPath);
-        }
+        project.addCompileSourceRoot(outputPath);
     }
 
     void generateDefaultPackageInfo(final String relativePath) throws IOException {
