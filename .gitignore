@@ -1,4 +1,7 @@
+*.bak
+*.releaseBackup
 .classpath
 .project
 .settings
+release.properties
 target
