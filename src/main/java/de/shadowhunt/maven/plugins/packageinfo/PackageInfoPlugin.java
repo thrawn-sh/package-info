@@ -38,7 +38,7 @@ import org.apache.maven.project.MavenProject;
  * Generate package-info.java for each package that doesn't already contain one.<br/>
  * Call <code>mvn package-info:package-info</code> to generate missing package-info.java.
  */
-@Mojo(name = "package-info", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
+@Mojo(name = "package-info", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class PackageInfoPlugin extends AbstractMojo {
 
     static final FileFilter JAVA_FILTER = new FileFilter() {
