@@ -23,7 +23,7 @@
 
 Examples
 
-	Annotate all packages with <<<javax.annotation.ParametersAreNonnullByDefault>>> annotations
+	Annotate net.example.application.gui and net.example.application.database (with all their subpackages)  with <<<javax.annotation.ParametersAreNonnullByDefault>>> annotations
 
 +-----+
 <project>
@@ -34,9 +34,14 @@ Examples
             <artifactId>package-info-maven-plugin</artifactId>
             <version>${project.version}</version>
             <configuration>
-                <annotationLines>
-                    <annotationLine>@javax.annotation.ParametersAreNonnullByDefault</annotationLine>
-                </annotationLines>
+                <packages>
+                    <package>
+                        <annotations>
+                            <annotation>@javax.annotation.ParametersAreNonnullByDefault</annotation>
+                        </annotations>
+                        <regex>net\.example\.application\.(gui|database)\..*</regex>
+                    </package>
+                </packages>
             </configuration>
             <executions>
                 <execution>

@@ -1,18 +1,7 @@
 /**
- * This file is part of Maven package-info.java Plugin.
- *
- * Maven package-info.java Plugin is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Maven package-info.java Plugin is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Maven package-info.java Plugin.  If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Maven package-info.java Plugin. Maven package-info.java Plugin is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Maven package-info.java Plugin is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with Maven package-info.java Plugin. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package de.shadowhunt.maven.plugins.packageinfo;
 
@@ -99,12 +88,6 @@ public class PackageInfoPlugin extends AbstractMojo {
     }
 
     /**
-     * Annotations that are placed into each generated package-info.java file.
-     */
-    @Parameter
-    private List<String> annotationLines;
-
-    /**
      * The source directories containing the sources to be checked for missing package-info.java.
      */
     @Parameter(defaultValue = "${project.compileSourceRoots}", required = true, readonly = true)
@@ -115,6 +98,12 @@ public class PackageInfoPlugin extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.directory}/generated-sources/package-info", required = true)
     private File outputDirectory;
+
+    /**
+     * Package configuration
+     */
+    @Parameter
+    private List<PackageConfiguration> packages;
 
     /**
      * The project currently being built.
@@ -137,8 +126,8 @@ public class PackageInfoPlugin extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         final Log log = getLog();
 
-        if (isEmpty(annotationLines)) {
-            log.warn("no annotationLines give: not generating any package-info.java files");
+        if (isEmpty(packages)) {
+            log.warn("no packages give: not generating any package-info.java files");
             return;
         }
 
@@ -173,21 +162,19 @@ public class PackageInfoPlugin extends AbstractMojo {
         final File packageInfo = new File(absoluteOutputDirectory, filename);
         createNecessaryDirectories(packageInfo);
 
-        final PrintWriter pw = new PrintWriter(packageInfo);
-        for (final String annotationLine : annotationLines) {
-            pw.println(annotationLine);
-        }
-
         final String packageName = path2PackageName(relativePath);
-        pw.print("package ");
-        pw.print(packageName);
-        pw.println(";");
-        pw.println();
-        pw.close();
-    }
-
-    public List<String> getAnnotationLines() {
-        return annotationLines;
+        for (final PackageConfiguration configuration : packages) {
+            if (configuration.matches(packageName)) {
+                final PrintWriter pw = new PrintWriter(packageInfo);
+                configuration.printAnnotions(pw);
+                pw.print("package ");
+                pw.print(packageName);
+                pw.println(";");
+                pw.println();
+                pw.close();
+                return;
+            }
+        }
     }
 
     public List<String> getCompileSourceRoots() {
@@ -196,6 +183,10 @@ public class PackageInfoPlugin extends AbstractMojo {
 
     public File getOutputDirectory() {
         return outputDirectory;
+    }
+
+    public List<PackageConfiguration> getPackages() {
+        return packages;
     }
 
     public MavenProject getProject() {
@@ -228,16 +219,16 @@ public class PackageInfoPlugin extends AbstractMojo {
         }
     }
 
-    public void setAnnotationLines(final List<String> annotationLines) {
-        this.annotationLines = annotationLines;
-    }
-
     public void setCompileSourceRoots(final List<String> compileSourceRoots) {
         this.compileSourceRoots = compileSourceRoots;
     }
 
     public void setOutputDirectory(final File outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    public void setPackages(final List<PackageConfiguration> packages) {
+        this.packages = packages;
     }
 
     public void setProject(final MavenProject project) {

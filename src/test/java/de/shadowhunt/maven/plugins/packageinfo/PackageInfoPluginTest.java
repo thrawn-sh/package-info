@@ -1,18 +1,7 @@
 /**
- * This file is part of Maven package-info.java Plugin.
- *
- * Maven package-info.java Plugin is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Maven package-info.java Plugin is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Maven package-info.java Plugin.  If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Maven package-info.java Plugin. Maven package-info.java Plugin is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Maven package-info.java Plugin is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with Maven package-info.java Plugin. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package de.shadowhunt.maven.plugins.packageinfo;
 
@@ -39,11 +28,35 @@ public class PackageInfoPluginTest {
         Assert.assertFalse("null must not contain files", PackageInfoPlugin.containsFiles(null, PackageInfoPlugin.JAVA_FILTER));
         Assert.assertFalse("empty must not contain files", PackageInfoPlugin.containsFiles(new File[0], PackageInfoPlugin.JAVA_FILTER));
 
-        File classFile = temporaryFolder.newFile("a.class");
+        final File classFile = temporaryFolder.newFile("a.class");
         Assert.assertFalse("class must not contain files", PackageInfoPlugin.containsFiles(new File[] { classFile }, PackageInfoPlugin.JAVA_FILTER));
 
-        File javaFile = temporaryFolder.newFile("b.java");
+        final File javaFile = temporaryFolder.newFile("b.java");
         Assert.assertTrue("java must contain files", PackageInfoPlugin.containsFiles(new File[] { javaFile }, PackageInfoPlugin.JAVA_FILTER));
+    }
+
+    @Test(expected = IOException.class)
+    public void createNecessaryDirectoriesExceptionTest() throws IOException {
+        final File parent = temporaryFolder.newFile("a");
+        final File file = new File(parent, "b");
+        PackageInfoPlugin.createNecessaryDirectories(file);
+    }
+
+    @Test
+    public void createNecessaryDirectoriesTest() throws IOException {
+        { // existing folder
+            final File folder = temporaryFolder.getRoot();
+            Assert.assertTrue("folder exists", folder.isDirectory());
+            PackageInfoPlugin.createNecessaryDirectories(folder);
+            Assert.assertTrue("folder exists", folder.isDirectory());
+        }
+
+        { // newly created folder
+            final File folder = new File(temporaryFolder.getRoot(), "a/b/c/d");
+            Assert.assertFalse("folder doesn't exists", folder.isDirectory());
+            PackageInfoPlugin.createNecessaryDirectories(folder);
+            Assert.assertTrue("folder exists", folder.getParentFile().isDirectory());
+        }
     }
 
     @Test
@@ -63,31 +76,33 @@ public class PackageInfoPluginTest {
     public void generateDefaultPackageInfoTest() throws IOException {
         final PackageInfoPlugin plugin = new PackageInfoPlugin();
 
-        String annotation = "test";
+        final String annotation = "test";
+        final PackageConfiguration configuration = new PackageConfiguration();
+        configuration.setAnnotations(Arrays.asList(annotation));
 
-        File source = temporaryFolder.newFolder("source");
-        File output = temporaryFolder.newFolder("output");
+        final File source = temporaryFolder.newFolder("source");
+        final File output = temporaryFolder.newFolder("output");
         plugin.setOutputDirectory(output);
         plugin.setCompileSourceRoots(Arrays.asList(source.getPath()));
-        plugin.setAnnotationLines(Arrays.asList(annotation));
+        plugin.setPackages(Arrays.asList(new PackageConfiguration()));
 
         { // default package
-            File defaultPackageInfo = new File(output, "package-info.java");
+            final File defaultPackageInfo = new File(output, "package-info.java");
             plugin.generateDefaultPackageInfo(""); // default package
             Assert.assertFalse("no package-info.java for default package", defaultPackageInfo.isFile());
         }
 
         { // existing
-            File targetPackageInfo = new File(output, "package-info.java");
+            final File targetPackageInfo = new File(output, "package-info.java");
             temporaryFolder.newFolder("source", "net", "example");
-            File sourcePackageInfo = temporaryFolder.newFile("source/net/example/package-info.java");
+            temporaryFolder.newFile("source/net/example/package-info.java");
 
             plugin.generateDefaultPackageInfo("net/example");
             Assert.assertFalse("no package-info.java for net/example package", targetPackageInfo.isFile());
         }
 
         {
-            File targetPackageInfo = new File(output, "net/example/foo/package-info.java");
+            final File targetPackageInfo = new File(output, "net/example/foo/package-info.java");
 
             Assert.assertFalse("no package-info.java for default package", targetPackageInfo.isFile());
             plugin.generateDefaultPackageInfo("net/example/foo");
@@ -154,29 +169,5 @@ public class PackageInfoPluginTest {
         final File root = new File("/root/");
         Assert.assertEquals("de/shadowhunt/maven", PackageInfoPlugin.toRelativePath(root, new File("/root/de/shadowhunt/maven/")));
         Assert.assertEquals("", PackageInfoPlugin.toRelativePath(root, root));
-    }
-
-    @Test
-    public void createNecessaryDirectoriesTest() throws IOException {
-        { // existing folder
-            File folder = temporaryFolder.getRoot();
-            Assert.assertTrue("folder exists", folder.isDirectory());
-            PackageInfoPlugin.createNecessaryDirectories(folder);
-            Assert.assertTrue("folder exists", folder.isDirectory());
-        }
-
-        { // newly created folder
-            File folder = new File(temporaryFolder.getRoot(), "a/b/c/d");
-            Assert.assertFalse("folder doesn't exists", folder.isDirectory());
-            PackageInfoPlugin.createNecessaryDirectories(folder);
-            Assert.assertTrue("folder exists", folder.getParentFile().isDirectory());
-        }
-    }
-
-    @Test(expected = IOException.class)
-    public void createNecessaryDirectoriesExceptionTest() throws IOException {
-        File parent = temporaryFolder.newFile("a");
-        File file = new File(parent, "b");
-        PackageInfoPlugin.createNecessaryDirectories(file);
     }
 }
