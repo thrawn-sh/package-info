@@ -24,7 +24,7 @@
 
 Examples
 
-	Annotate net.example.application.gui and net.example.application.database (with all their subpackages)  with <<<javax.annotation.ParametersAreNonnullByDefault>>> annotations. All other packages are annoteded with <<<javax.annotation.ParametersAreCheckforNullByDefault>>>. If there are multiple package configurations, only the *first* one with an matching regex is used, all following package configurations are ignored. For the regex evaluation the default JAVA implementation (<<<java.util.Pattern>>>) is used.
+	Annotate net.example.application.gui and net.example.application.database (with all their subpackages)  with <<<javax.annotation.ParametersAreNonnullByDefault>>> annotations. All other packages are annoteded with <<<javax.annotation.ParametersAreCheckforNullByDefault>>>. If there are multiple package configurations, only the *first* one with an matching regex is used, all following package configurations are ignored. For the regex evaluation the default JAVA implementation (<<<java.util.regex.Pattern>>>) is used.
 
 +-----+
 <project>
