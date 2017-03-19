@@ -157,6 +157,7 @@
                 <artifactId>sortpom-maven-plugin</artifactId>
                 <version>2.5.0</version>
                 <configuration>
+                    <createBackupFile>false</createBackupFile>
                     <keepBlankLines>true</keepBlankLines>
                     <nrOfIndentSpace>4</nrOfIndentSpace>
                     <sortDependencies>groupId,artifactId</sortDependencies>
