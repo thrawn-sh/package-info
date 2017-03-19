@@ -15,7 +15,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+    along with this program. If not, see <http://www.gnu.org/licenses />.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -23,7 +23,7 @@
 
     <groupId>de.shadowhunt.maven.plugins</groupId>
     <artifactId>package-info-maven-plugin</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <!-- project information {{{1 -->
@@ -63,7 +63,7 @@
     <scm>
         <connection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin.git</connection>
         <developerConnection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
-        <tag>v2.0.0</tag>
+        <tag>HEAD</tag>
         <url>https://github.com/thrawn-sh/package-info</url>
     </scm>
 
