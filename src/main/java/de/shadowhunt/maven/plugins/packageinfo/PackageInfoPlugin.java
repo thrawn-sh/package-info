@@ -1,6 +1,6 @@
 /**
  * Maven package-info.java Plugin - Autogenerates package-info.java files with arbitrary headers
- * Copyright © ${project.inceptionYear} shadowhunt (dev@shadowhunt.de)
+ * Copyright © 2012-2018 shadowhunt (dev@shadowhunt.de)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -42,16 +45,12 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "package-info", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class PackageInfoPlugin extends AbstractMojo {
 
-    static final FileFilter JAVA_FILTER = new FileFilter() {
-
-        @Override
-        public boolean accept(final File file) {
-            if (file.isFile()) {
-                final String name = file.getName().toLowerCase(Locale.ENGLISH);
-                return name.endsWith(".java");
-            }
-            return false;
+    static final FileFilter JAVA_FILTER = file -> {
+        if (file.isFile()) {
+            final String name = file.getName().toLowerCase(Locale.ENGLISH);
+            return name.endsWith(".java");
         }
+        return false;
     };
 
     static boolean containsFiles(final File[] files, final FileFilter filter) {
@@ -177,13 +176,15 @@ public class PackageInfoPlugin extends AbstractMojo {
         final String packageName = path2PackageName(relativePath);
         for (final PackageConfiguration configuration : packages) {
             if (configuration.matches(packageName)) {
-                final PrintWriter pw = new PrintWriter(packageInfo);
-                configuration.printAnnotions(pw);
-                pw.print("package ");
-                pw.print(packageName);
-                pw.println(";");
-                pw.println();
-                pw.close();
+                try (Writer packageInfoWriter = new FileWriterWithEncoding(packageInfo, StandardCharsets.UTF_8)) {
+                    try (PrintWriter pw = new PrintWriter(packageInfoWriter)) {
+                        configuration.printAnnotions(pw);
+                        pw.print("package ");
+                        pw.print(packageName);
+                        pw.println(";");
+                        pw.println();
+                    }
+                }
                 return;
             }
         }
