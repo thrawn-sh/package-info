@@ -1,6 +1,6 @@
 /**
  * Maven package-info.java Plugin - Autogenerates package-info.java files with arbitrary headers
- * Copyright © ${project.inceptionYear} shadowhunt (dev@shadowhunt.de)
+ * Copyright © 2012-2018 shadowhunt (dev@shadowhunt.de)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,5 +16,5 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 @de.shadowhunt.annotation.ReturnValuesAreNonnullByDefault
-@javax.annotation.ParametersAreNonnullByDefault package de.shadowhunt.maven.plugins.packageinfo;
-
+@javax.annotation.ParametersAreNonnullByDefault
+package de.shadowhunt.maven.plugins.packageinfo;

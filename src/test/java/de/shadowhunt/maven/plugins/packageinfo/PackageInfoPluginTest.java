@@ -1,6 +1,6 @@
 /**
  * Maven package-info.java Plugin - Autogenerates package-info.java files with arbitrary headers
- * Copyright © ${project.inceptionYear} shadowhunt (dev@shadowhunt.de)
+ * Copyright © 2012-2018 shadowhunt (dev@shadowhunt.de)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,19 +56,17 @@ public class PackageInfoPluginTest {
 
     @Test
     public void createNecessaryDirectoriesTest() throws IOException {
-        { // existing folder
-            final File folder = temporaryFolder.getRoot();
-            Assert.assertTrue("folder exists", folder.isDirectory());
-            PackageInfoPlugin.createNecessaryDirectories(folder);
-            Assert.assertTrue("folder exists", folder.isDirectory());
-        }
+        // existing folder
+        final File exisitingFolder = temporaryFolder.getRoot();
+        Assert.assertTrue("folder exists", exisitingFolder.isDirectory());
+        PackageInfoPlugin.createNecessaryDirectories(exisitingFolder);
+        Assert.assertTrue("folder exists", exisitingFolder.isDirectory());
 
-        { // newly created folder
-            final File folder = new File(temporaryFolder.getRoot(), "a/b/c/d");
-            Assert.assertFalse("folder doesn't exists", folder.isDirectory());
-            PackageInfoPlugin.createNecessaryDirectories(folder);
-            Assert.assertTrue("folder exists", folder.getParentFile().isDirectory());
-        }
+        // newly created folder
+        final File folder = new File(temporaryFolder.getRoot(), "a/b/c/d");
+        Assert.assertFalse("folder doesn't exists", folder.isDirectory());
+        PackageInfoPlugin.createNecessaryDirectories(folder);
+        Assert.assertTrue("folder exists", folder.getParentFile().isDirectory());
     }
 
     @Test
@@ -98,28 +96,22 @@ public class PackageInfoPluginTest {
         plugin.setCompileSourceRoots(Arrays.asList(source.getPath()));
         plugin.setPackages(Arrays.asList(new PackageConfiguration()));
 
-        { // default package
-            final File defaultPackageInfo = new File(output, "package-info.java");
-            plugin.generateDefaultPackageInfo(""); // default package
-            Assert.assertFalse("no package-info.java for default package", defaultPackageInfo.isFile());
-        }
+        // default package
+        final File defaultPackageInfo = new File(output, "package-info.java");
+        plugin.generateDefaultPackageInfo(""); // default package
+        Assert.assertFalse("no package-info.java for default package", defaultPackageInfo.isFile());
 
-        { // existing
-            final File targetPackageInfo = new File(output, "package-info.java");
-            temporaryFolder.newFolder("source", "net", "example");
-            temporaryFolder.newFile("source/net/example/package-info.java");
+        // existing
+        final File subTargetPackageInfo = new File(output, "package-info.java");
+        temporaryFolder.newFolder("source", "net", "example");
+        temporaryFolder.newFile("source/net/example/package-info.java");
+        plugin.generateDefaultPackageInfo("net/example");
+        Assert.assertFalse("no package-info.java for net/example package", subTargetPackageInfo.isFile());
 
-            plugin.generateDefaultPackageInfo("net/example");
-            Assert.assertFalse("no package-info.java for net/example package", targetPackageInfo.isFile());
-        }
-
-        {
-            final File targetPackageInfo = new File(output, "net/example/foo/package-info.java");
-
-            Assert.assertFalse("no package-info.java for default package", targetPackageInfo.isFile());
-            plugin.generateDefaultPackageInfo("net/example/foo");
-            Assert.assertTrue("package-info.java for default package", targetPackageInfo.isFile());
-        }
+        final File targetPackageInfo = new File(output, "net/example/foo/package-info.java");
+        Assert.assertFalse("no package-info.java for default package", targetPackageInfo.isFile());
+        plugin.generateDefaultPackageInfo("net/example/foo");
+        Assert.assertTrue("package-info.java for default package", targetPackageInfo.isFile());
     }
 
     @Test
@@ -132,8 +124,8 @@ public class PackageInfoPluginTest {
     @Test
     public void isEmptyListTest() {
         Assert.assertTrue("null List is empty", PackageInfoPlugin.isEmpty((List<?>) null));
-        Assert.assertTrue("empty List is empty", PackageInfoPlugin.isEmpty(new ArrayList<Object>()));
-        final List<Object> list = new ArrayList<Object>();
+        Assert.assertTrue("empty List is empty", PackageInfoPlugin.isEmpty(new ArrayList<>()));
+        final List<Object> list = new ArrayList<>();
         list.add(new Object());
         Assert.assertFalse("List is not empty", PackageInfoPlugin.isEmpty(list));
     }
