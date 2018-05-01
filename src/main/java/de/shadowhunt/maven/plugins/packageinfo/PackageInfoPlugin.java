@@ -22,9 +22,10 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.CheckForNull;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -46,11 +47,12 @@ import org.apache.maven.project.MavenProject;
 public class PackageInfoPlugin extends AbstractMojo {
 
     static final FileFilter JAVA_FILTER = file -> {
-        if (file.isFile()) {
-            final String name = file.getName().toLowerCase(Locale.ENGLISH);
-            return name.endsWith(".java");
+        if (!file.isFile()) {
+            return false;
         }
-        return false;
+        final String name = file.getName();
+        final String lowerCaseName = name.toLowerCase(Locale.ENGLISH);
+        return lowerCaseName.endsWith(".java");
     };
 
     static boolean containsFiles(final File[] files, final FileFilter filter) {
@@ -78,17 +80,45 @@ public class PackageInfoPlugin extends AbstractMojo {
         }
     }
 
-    static boolean isEmpty(final File[] files) {
+    static boolean doesFileAlreadyExistInSourceRoots(final String filename, final File base, final List<String> compileSourceFolders) {
+        for (final String compileSourceFolder : compileSourceFolders) {
+            final File folder = new File(compileSourceFolder);
+            final File root = makeFileAbsolute(base, folder);
+            final File file = new File(root, filename);
+            if (file.isFile()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean isEmpty(@CheckForNull final File[] files) {
         return (files == null) || (files.length == 0);
     }
 
-    static boolean isEmpty(final List<?> list) {
+    static boolean isEmpty(@CheckForNull final List<?> list) {
         return (list == null) || list.isEmpty();
+    }
+
+    static final File makeFileAbsolute(final File base, final File file) {
+        if (file.isAbsolute()) {
+            return file;
+        }
+
+        final String path = file.getPath();
+        return new File(base, path);
     }
 
     static String path2PackageName(final String path) {
         final String strip = StringUtils.strip(path, File.separator);
         return strip.replace(File.separatorChar, '.');
+    }
+
+    static File[] toEmpty(@CheckForNull final File[] files) {
+        if (files == null) {
+            return new File[0];
+        }
+        return files;
     }
 
     static String toRelativePath(final File root, final File file) {
@@ -103,6 +133,12 @@ public class PackageInfoPlugin extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.compileSourceRoots}", required = true, readonly = true)
     private List<String> compileSourceRoots;
+
+    /**
+     * Encoding for the generated package-info.java files.
+     */
+    @Parameter(defaultValue = "${project.build.sourceEncoding}", required = true, readonly = true)
+    private String encoding;
 
     /**
      * Specify where to place generated package-info.java files.
@@ -122,63 +158,62 @@ public class PackageInfoPlugin extends AbstractMojo {
     @Parameter(property = "project", required = true, readonly = true)
     protected MavenProject project;
 
-    boolean doesFileAlreadyExistInSourceRoots(final String filename) {
-        for (final String compileSourceRoot : compileSourceRoots) {
-            final File absoluteCompileSourceRootFolder = makeFileAbsolute(new File(compileSourceRoot));
-            final File file = new File(absoluteCompileSourceRootFolder, filename);
-            if (file.isFile()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         final Log log = getLog();
 
-        if (isEmpty(packages)) {
-            log.warn("no packages give: not generating any package-info.java files");
-            return;
-        }
-
         try {
-            for (final String compileSourceRoot : compileSourceRoots) {
-                final File root = makeFileAbsolute(new File(compileSourceRoot));
+            final List<PackageConfiguration> packageConfigurations = getPackages();
+            if (isEmpty(packageConfigurations)) {
+                log.warn("no packages give: not generating any package-info.java files");
+                return;
+            }
+
+            final MavenProject mavenProject = getProject();
+            final File base = mavenProject.getBasedir();
+            final List<String> compileSourceFolders = getCompileSourceRoots();
+            for (final String compileSourceFolder : compileSourceFolders) {
+                final File folder = new File(compileSourceFolder);
+                final File root = makeFileAbsolute(base, folder);
                 log.debug("checking " + root + " for missing package-info.java files");
                 processFolder(root, root);
             }
-        } catch (final IOException e) {
+
+            final File directory = getOutputDirectory();
+            final File absoluteOutputDirectory = makeFileAbsolute(base, directory);
+            final String outputPath = absoluteOutputDirectory.getAbsolutePath();
+            mavenProject.addCompileSourceRoot(outputPath);
+        } catch (final Exception e) {
             throw new MojoExecutionException("could not generate package-info.java", e);
         }
-
-        final File absoluteOutputDirectory = makeFileAbsolute(outputDirectory);
-        final String outputPath = absoluteOutputDirectory.getAbsolutePath();
-        project.addCompileSourceRoot(outputPath);
     }
 
-    void generateDefaultPackageInfo(final String relativePath) throws IOException {
+    void generateDefaultPackageInfo(final File base, final String relativePath) throws IOException {
         if (StringUtils.isEmpty(relativePath)) {
             // default package can't have package-info.java
             return;
         }
 
         final String filename = relativePath + File.separator + "package-info.java";
-        if (doesFileAlreadyExistInSourceRoots(filename)) {
+        final List<String> compileSourceFolders = getCompileSourceRoots();
+        if (doesFileAlreadyExistInSourceRoots(filename, base, compileSourceFolders)) {
             // don't generate file in outputDirectory if it already exists in one of the compileSourceRoots
             return;
         }
 
-        final File absoluteOutputDirectory = makeFileAbsolute(outputDirectory);
+        final File directory = getOutputDirectory();
+        final File absoluteOutputDirectory = makeFileAbsolute(base, directory);
         final File packageInfo = new File(absoluteOutputDirectory, filename);
         createNecessaryDirectories(packageInfo);
 
+        final String sourceCodeEncoding = getEncoding();
         final String packageName = path2PackageName(relativePath);
-        for (final PackageConfiguration configuration : packages) {
-            if (configuration.matches(packageName)) {
-                try (Writer packageInfoWriter = new FileWriterWithEncoding(packageInfo, StandardCharsets.UTF_8)) {
+        final List<PackageConfiguration> packageConfigurations = getPackages();
+        for (final PackageConfiguration packageConfiguration : packageConfigurations) {
+            if (packageConfiguration.matches(packageName)) {
+                try (Writer packageInfoWriter = new FileWriterWithEncoding(packageInfo, sourceCodeEncoding)) {
                     try (PrintWriter pw = new PrintWriter(packageInfoWriter)) {
-                        configuration.printAnnotions(pw);
+                        packageConfiguration.printAnnotions(pw);
                         pw.print("package ");
                         pw.print(packageName);
                         pw.println(";");
@@ -194,6 +229,10 @@ public class PackageInfoPlugin extends AbstractMojo {
         return compileSourceRoots;
     }
 
+    public String getEncoding() {
+        return encoding;
+    }
+
     public File getOutputDirectory() {
         return outputDirectory;
     }
@@ -206,34 +245,30 @@ public class PackageInfoPlugin extends AbstractMojo {
         return project;
     }
 
-    final File makeFileAbsolute(final File file) {
-        if (file.isAbsolute()) {
-            return file;
-        }
-
-        return new File(project.getBasedir(), file.getPath());
-    }
-
-    void processFolder(final File file, final File root) throws IOException {
-        if (!file.isDirectory()) {
+    void processFolder(final File folder, final File base) throws IOException {
+        if (!folder.isDirectory()) {
             return;
         }
 
-        final File[] children = file.listFiles();
-        if (children != null) {
-            if (containsFiles(children, JAVA_FILTER)) {
-                final String relativePath = toRelativePath(root, file);
-                generateDefaultPackageInfo(relativePath);
-            }
+        File[] children = folder.listFiles();
+        children = toEmpty(children);
 
-            for (final File child : children) {
-                processFolder(child, root);
-            }
+        if (containsFiles(children, JAVA_FILTER)) {
+            final String relativePath = toRelativePath(base, folder);
+            generateDefaultPackageInfo(base, relativePath);
+        }
+
+        for (final File child : children) {
+            processFolder(child, base);
         }
     }
 
     public void setCompileSourceRoots(final List<String> compileSourceRoots) {
         this.compileSourceRoots = compileSourceRoots;
+    }
+
+    public void setEncoding(final String encoding) {
+        this.encoding = encoding;
     }
 
     public void setOutputDirectory(final File outputDirectory) {

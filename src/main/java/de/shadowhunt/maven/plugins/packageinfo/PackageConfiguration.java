@@ -30,7 +30,7 @@ public class PackageConfiguration {
     /**
      * Annotations that are placed into each generated package-info.java file.
      */
-    private List<String> annotations = new ArrayList<String>();
+    private List<String> annotations = new ArrayList<>();
 
     private Pattern pattern;
 
@@ -49,14 +49,14 @@ public class PackageConfiguration {
 
     public boolean matches(final String packageName) {
         if (pattern == null) {
-            pattern = Pattern.compile(regex);
+            pattern = Pattern.compile(getRegex());
         }
         final Matcher matcher = pattern.matcher(packageName);
         return matcher.matches();
     }
 
     public void printAnnotions(final PrintWriter pw) {
-        for (final String annotation : annotations) {
+        for (final String annotation : getAnnotations()) {
             pw.println(annotation);
         }
     }

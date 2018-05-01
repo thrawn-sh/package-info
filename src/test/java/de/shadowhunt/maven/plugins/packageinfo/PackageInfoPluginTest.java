@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -36,7 +37,7 @@ public class PackageInfoPluginTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void containsFilesTest() throws IOException {
+    public void containsFilesTest() throws Exception {
         Assert.assertFalse("null must not contain files", PackageInfoPlugin.containsFiles(null, PackageInfoPlugin.JAVA_FILTER));
         Assert.assertFalse("empty must not contain files", PackageInfoPlugin.containsFiles(new File[0], PackageInfoPlugin.JAVA_FILTER));
 
@@ -48,14 +49,14 @@ public class PackageInfoPluginTest {
     }
 
     @Test(expected = IOException.class)
-    public void createNecessaryDirectoriesExceptionTest() throws IOException {
+    public void createNecessaryDirectoriesExceptionTest() throws Exception {
         final File parent = temporaryFolder.newFile("a");
         final File file = new File(parent, "b");
         PackageInfoPlugin.createNecessaryDirectories(file);
     }
 
     @Test
-    public void createNecessaryDirectoriesTest() throws IOException {
+    public void createNecessaryDirectoriesTest() throws Exception {
         // existing folder
         final File exisitingFolder = temporaryFolder.getRoot();
         Assert.assertTrue("folder exists", exisitingFolder.isDirectory());
@@ -70,68 +71,91 @@ public class PackageInfoPluginTest {
     }
 
     @Test
-    public void doesFileAlreadyExistInSourceRootsTest() throws IOException {
-        final PackageInfoPlugin plugin = new PackageInfoPlugin();
-        final List<String> compileSourceRoots = Arrays.asList(temporaryFolder.getRoot().getPath());
-        plugin.setCompileSourceRoots(compileSourceRoots);
+    public void doesFileAlreadyExistInSourceRootsTest() throws Exception {
+        final File root = temporaryFolder.getRoot();
+        final List<String> compileSourceRoots = Arrays.asList(root.getPath());
 
         temporaryFolder.newFolder("net", "example");
         temporaryFolder.newFile("net/example/package-info.java");
-        Assert.assertTrue("package-info.java must exists", plugin.doesFileAlreadyExistInSourceRoots("net/example/package-info.java"));
+        Assert.assertTrue("package-info.java must exists", PackageInfoPlugin.doesFileAlreadyExistInSourceRoots("net/example/package-info.java", root, compileSourceRoots));
 
-        Assert.assertFalse("\"package-info.java must not exists\"", plugin.doesFileAlreadyExistInSourceRoots("net/example/foo/package-info.java"));
+        Assert.assertFalse("package-info.java must not exists", PackageInfoPlugin.doesFileAlreadyExistInSourceRoots("net/example/foo/package-info.java", root, compileSourceRoots));
     }
 
     @Test
-    public void generateDefaultPackageInfoTest() throws IOException {
+    public void executeEmptyTest() throws Exception {
         final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        plugin.execute();
+    }
 
-        final String annotation = "test";
+    @Test(expected = MojoExecutionException.class)
+    public void executeExceptionTest() throws Exception {
         final PackageConfiguration configuration = new PackageConfiguration();
-        configuration.setAnnotations(Arrays.asList(annotation));
+        final List<String> annotations = Arrays.asList("test");
+        configuration.setAnnotations(annotations);
+        final List<PackageConfiguration> configurations = Arrays.asList(configuration);
+
+        final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        plugin.setPackages(configurations);
+        plugin.execute();
+    }
+
+    @Test
+    public void executeTest() throws Exception {
+        final File root = temporaryFolder.getRoot();
+
+        final MavenProject projectMock = Mockito.mock(MavenProject.class);
+        Mockito.when(projectMock.getBasedir()).thenReturn(root);
+
+        final PackageConfiguration configuration = new PackageConfiguration();
+        final List<String> annotations = Arrays.asList("test");
+        configuration.setAnnotations(annotations);
+        final List<PackageConfiguration> configurations = Arrays.asList(configuration);
 
         final File source = temporaryFolder.newFolder("source");
+        final String sourcePath = source.getPath();
+        final List<String> sources = Arrays.asList(sourcePath);
+
         final File output = temporaryFolder.newFolder("output");
+
+        final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        plugin.setProject(projectMock);
+        plugin.setEncoding("UTF-8");
         plugin.setOutputDirectory(output);
-        plugin.setCompileSourceRoots(Arrays.asList(source.getPath()));
-        plugin.setPackages(Arrays.asList(new PackageConfiguration()));
+        plugin.setCompileSourceRoots(sources);
+        plugin.setPackages(configurations);
 
         // default package
-        final File defaultPackageInfo = new File(output, "package-info.java");
-        plugin.generateDefaultPackageInfo(""); // default package
-        Assert.assertFalse("no package-info.java for default package", defaultPackageInfo.isFile());
+        temporaryFolder.newFile("source/Test.java");
+        // package with existing package-info.java
+        temporaryFolder.newFolder("source", "net", "example", "exisiting");
+        temporaryFolder.newFile("source/net/example/exisiting/Test.java");
+        temporaryFolder.newFile("source/net/example/exisiting/package-info.java");
+        // package with missing package-info.java
+        temporaryFolder.newFolder("source", "net", "example", "missing");
+        temporaryFolder.newFile("source/net/example/missing/Test.java");
 
-        // existing
-        final File subTargetPackageInfo = new File(output, "package-info.java");
-        temporaryFolder.newFolder("source", "net", "example");
-        temporaryFolder.newFile("source/net/example/package-info.java");
-        plugin.generateDefaultPackageInfo("net/example");
-        Assert.assertFalse("no package-info.java for net/example package", subTargetPackageInfo.isFile());
-
-        final File targetPackageInfo = new File(output, "net/example/foo/package-info.java");
-        Assert.assertFalse("no package-info.java for default package", targetPackageInfo.isFile());
-        plugin.generateDefaultPackageInfo("net/example/foo");
-        Assert.assertTrue("package-info.java for default package", targetPackageInfo.isFile());
+        plugin.execute();
+        // FIXME TODO
     }
 
     @Test
-    public void isEmptyArrayTest() {
+    public void isEmptyArrayTest() throws Exception {
         Assert.assertTrue("null array is empty", PackageInfoPlugin.isEmpty((File[]) null));
         Assert.assertTrue("empty array is empty", PackageInfoPlugin.isEmpty(new File[0]));
         Assert.assertFalse("array is not empty", PackageInfoPlugin.isEmpty(new File[1]));
     }
 
     @Test
-    public void isEmptyListTest() {
+    public void isEmptyListTest() throws Exception {
         Assert.assertTrue("null List is empty", PackageInfoPlugin.isEmpty((List<?>) null));
         Assert.assertTrue("empty List is empty", PackageInfoPlugin.isEmpty(new ArrayList<>()));
-        final List<Object> list = new ArrayList<>();
-        list.add(new Object());
+        final List<Object> list = Arrays.asList(new Object());
         Assert.assertFalse("List is not empty", PackageInfoPlugin.isEmpty(list));
     }
 
     @Test
-    public void javaFilterTest() throws IOException {
+    public void javaFilterTest() throws Exception {
         final File javaFile = temporaryFolder.newFile("a.java");
         Assert.assertTrue("JAVA_FILTER must accept a.java", PackageInfoPlugin.JAVA_FILTER.accept(javaFile));
 
@@ -149,18 +173,15 @@ public class PackageInfoPluginTest {
     }
 
     @Test
-    public void makeFileAbsoluteTest() throws IOException {
-        final PackageInfoPlugin plugin = new PackageInfoPlugin();
-        final MavenProject project = Mockito.mock(MavenProject.class);
-        Mockito.when(project.getBasedir()).thenReturn(temporaryFolder.getRoot());
-        plugin.setProject(project);
-
-        final File expected = new File(temporaryFolder.getRoot(), "src/main/java/net/example/a.java");
-        Assert.assertEquals("files must match", expected, plugin.makeFileAbsolute(new File("src/main/java/net/example/a.java")));
+    public void makeFileAbsoluteTest() throws Exception {
+        final File root = temporaryFolder.getRoot();
+        final File expected = new File(root, "src/main/java/net/example/a.java");
+        final File file = new File("src/main/java/net/example/a.java");
+        Assert.assertEquals("files must match", expected, PackageInfoPlugin.makeFileAbsolute(root, file));
     }
 
     @Test
-    public void path2PackageNameTest() {
+    public void path2PackageNameTest() throws Exception {
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("/de/shadowhunt/maven/"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("de/shadowhunt/maven/"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("/de/shadowhunt/maven"));
@@ -169,7 +190,16 @@ public class PackageInfoPluginTest {
     }
 
     @Test
-    public void toRelativePathTest() {
+    public void toEmptyArrayTest() throws Exception {
+        final File[] empty = new File[0];
+        Assert.assertArrayEquals("array must match", empty, PackageInfoPlugin.toEmpty(null));
+        Assert.assertSame("array must be same", empty, PackageInfoPlugin.toEmpty(empty));
+        final File[] files = new File[1];
+        Assert.assertSame("array must be same", files, PackageInfoPlugin.toEmpty(files));
+    }
+
+    @Test
+    public void toRelativePathTest() throws Exception {
         final File root = new File("/root/");
         Assert.assertEquals("de/shadowhunt/maven", PackageInfoPlugin.toRelativePath(root, new File("/root/de/shadowhunt/maven/")));
         Assert.assertEquals("", PackageInfoPlugin.toRelativePath(root, root));
