@@ -116,10 +116,18 @@ public class PackageInfoPluginTest {
         final MavenProject projectMock = Mockito.mock(MavenProject.class);
         Mockito.when(projectMock.getBasedir()).thenReturn(root);
 
-        final PackageConfiguration configuration = new PackageConfiguration();
-        final List<String> annotations = Arrays.asList("// test");
-        configuration.setAnnotations(annotations);
-        final List<PackageConfiguration> configurations = Arrays.asList(configuration);
+        final PackageConfiguration otherConfiguration = new PackageConfiguration();
+        final List<String> otherConfigurationAnnotations = Arrays.asList("// other");
+        otherConfiguration.setAnnotations(otherConfigurationAnnotations);
+        otherConfiguration.setRegex("net.other.*");
+        final PackageConfiguration exampleConfiguration = new PackageConfiguration();
+        final List<String> exampleConfigurationAnnotations = Arrays.asList("// example");
+        exampleConfiguration.setAnnotations(exampleConfigurationAnnotations);
+        exampleConfiguration.setRegex("net.example.*");
+        final PackageConfiguration defaultConfiguration = new PackageConfiguration();
+        final List<String> defaultConfigurationAnnotations = Arrays.asList("// default");
+        defaultConfiguration.setAnnotations(defaultConfigurationAnnotations);
+        final List<PackageConfiguration> configurations = Arrays.asList(otherConfiguration, exampleConfiguration, defaultConfiguration);
 
         final File source = temporaryFolder.newFolder("source");
         final String sourcePath = source.getPath();
@@ -149,7 +157,7 @@ public class PackageInfoPluginTest {
         Assert.assertFalse("default package can not have package-info.java", new File(output, "package-info.java").exists());
         Assert.assertFalse("do not generate package-info.java when package-info.java already exists", new File(output, "net/example/exisiting/package-info.java").exists());
         final StringBuilder expected = new StringBuilder();
-        expected.append("// test");
+        expected.append("// example");
         expected.append(IOUtils.LINE_SEPARATOR);
         expected.append("package net.example.missing;");
         expected.append(IOUtils.LINE_SEPARATOR);
