@@ -18,11 +18,14 @@
 package de.shadowhunt.maven.plugins.packageinfo;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
@@ -32,6 +35,12 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
 public class PackageInfoPluginTest {
+
+    private static String getContent(final File file) throws IOException {
+        try (InputStream input = new FileInputStream(file)) {
+            return IOUtils.toString(input, "UTF-8");
+        }
+    }
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -108,7 +117,7 @@ public class PackageInfoPluginTest {
         Mockito.when(projectMock.getBasedir()).thenReturn(root);
 
         final PackageConfiguration configuration = new PackageConfiguration();
-        final List<String> annotations = Arrays.asList("test");
+        final List<String> annotations = Arrays.asList("// test");
         configuration.setAnnotations(annotations);
         final List<PackageConfiguration> configurations = Arrays.asList(configuration);
 
@@ -136,7 +145,17 @@ public class PackageInfoPluginTest {
         temporaryFolder.newFile("source/net/example/missing/Test.java");
 
         plugin.execute();
-        // FIXME TODO
+
+        Assert.assertFalse("default package can not have package-info.java", new File(output, "package-info.java").exists());
+        Assert.assertFalse("do not generate package-info.java when package-info.java already exists", new File(output, "net/example/exisiting/package-info.java").exists());
+        final StringBuilder expected = new StringBuilder();
+        expected.append("// test");
+        expected.append(IOUtils.LINE_SEPARATOR);
+        expected.append("package net.example.missing;");
+        expected.append(IOUtils.LINE_SEPARATOR);
+        expected.append(IOUtils.LINE_SEPARATOR);
+
+        Assert.assertEquals("content must match", expected.toString(), getContent(new File(output, "net/example/missing/package-info.java")));
     }
 
     @Test
