@@ -110,6 +110,40 @@ public class PackageInfoPluginTest {
     }
 
     @Test
+    public void executeNonMatchingTest() throws Exception {
+        final File root = temporaryFolder.getRoot();
+
+        final MavenProject projectMock = Mockito.mock(MavenProject.class);
+        Mockito.when(projectMock.getBasedir()).thenReturn(root);
+
+        final PackageConfiguration configuration = new PackageConfiguration();
+        final List<String> configurationAnnotations = Arrays.asList("// other");
+        configuration.setAnnotations(configurationAnnotations);
+        configuration.setRegex("net.other.*");
+        final List<PackageConfiguration> configurations = Arrays.asList(configuration);
+
+        final File source = temporaryFolder.newFolder("source");
+        final String sourcePath = source.getPath();
+        final List<String> sources = Arrays.asList(sourcePath);
+
+        final File output = temporaryFolder.newFolder("output");
+
+        final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        plugin.setProject(projectMock);
+        plugin.setEncoding("UTF-8");
+        plugin.setOutputDirectory(output);
+        plugin.setCompileSourceRoots(sources);
+        plugin.setPackages(configurations);
+
+        temporaryFolder.newFolder("source", "net", "example", "missing");
+        temporaryFolder.newFile("source/net/example/missing/Test.java");
+
+        plugin.execute();
+
+        Assert.assertFalse("pattern does not match => no file", new File(output, "net/example/missing/package-info.java").exists());
+    }
+
+    @Test
     public void executeTest() throws Exception {
         final File root = temporaryFolder.getRoot();
 
