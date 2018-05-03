@@ -188,7 +188,7 @@
                         <exclude>**/.*</exclude>
                         <exclude>Jenkinsfile</exclude>
                         <exclude>LICENSE</exclude>
-                        <exclude>README</exclude>
+                        <exclude>README.md</exclude>
                     </excludes>
                     <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header>
                     <properties>
