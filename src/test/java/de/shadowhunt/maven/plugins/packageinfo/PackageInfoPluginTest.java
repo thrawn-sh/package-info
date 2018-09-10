@@ -18,10 +18,10 @@
 package de.shadowhunt.maven.plugins.packageinfo;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +37,8 @@ import org.mockito.Mockito;
 public class PackageInfoPluginTest {
 
     private static String getContent(final File file) throws IOException {
-        try (InputStream input = new FileInputStream(file)) {
+        final Path path = file.toPath();
+        try (InputStream input = Files.newInputStream(path)) {
             return IOUtils.toString(input, "UTF-8");
         }
     }
@@ -47,14 +48,13 @@ public class PackageInfoPluginTest {
 
     @Test
     public void containsFilesTest() throws Exception {
-        Assert.assertFalse("null must not contain files", PackageInfoPlugin.containsFiles(null, PackageInfoPlugin.JAVA_FILTER));
-        Assert.assertFalse("empty must not contain files", PackageInfoPlugin.containsFiles(new File[0], PackageInfoPlugin.JAVA_FILTER));
+        Assert.assertFalse("empty must not contain files", PackageInfoPlugin.containsFiles(PackageInfoPlugin.JAVA_FILTER, new File[0]));
 
         final File classFile = temporaryFolder.newFile("a.class");
-        Assert.assertFalse("class must not contain files", PackageInfoPlugin.containsFiles(new File[] { classFile }, PackageInfoPlugin.JAVA_FILTER));
+        Assert.assertFalse("class must not contain files", PackageInfoPlugin.containsFiles(PackageInfoPlugin.JAVA_FILTER, new File[] { classFile }));
 
         final File javaFile = temporaryFolder.newFile("b.java");
-        Assert.assertTrue("java must contain files", PackageInfoPlugin.containsFiles(new File[] { javaFile }, PackageInfoPlugin.JAVA_FILTER));
+        Assert.assertTrue("java must contain files", PackageInfoPlugin.containsFiles(PackageInfoPlugin.JAVA_FILTER, new File[] { javaFile }));
     }
 
     @Test(expected = IOException.class)
@@ -99,12 +99,16 @@ public class PackageInfoPluginTest {
 
     @Test(expected = MojoExecutionException.class)
     public void executeExceptionTest() throws Exception {
+        final MavenProject projectMock = Mockito.mock(MavenProject.class);
+        Mockito.when(projectMock.getBasedir()).thenThrow(IOException.class);
+
         final PackageConfiguration configuration = new PackageConfiguration();
         final List<String> annotations = Arrays.asList("test");
         configuration.setAnnotations(annotations);
         final List<PackageConfiguration> configurations = Arrays.asList(configuration);
 
         final PackageInfoPlugin plugin = new PackageInfoPlugin();
+        plugin.setProject(projectMock);
         plugin.setPackages(configurations);
         plugin.execute();
     }
@@ -201,21 +205,6 @@ public class PackageInfoPluginTest {
     }
 
     @Test
-    public void isEmptyArrayTest() throws Exception {
-        Assert.assertTrue("null array is empty", PackageInfoPlugin.isEmpty((File[]) null));
-        Assert.assertTrue("empty array is empty", PackageInfoPlugin.isEmpty(new File[0]));
-        Assert.assertFalse("array is not empty", PackageInfoPlugin.isEmpty(new File[1]));
-    }
-
-    @Test
-    public void isEmptyListTest() throws Exception {
-        Assert.assertTrue("null List is empty", PackageInfoPlugin.isEmpty((List<?>) null));
-        Assert.assertTrue("empty List is empty", PackageInfoPlugin.isEmpty(new ArrayList<>()));
-        final List<Object> list = Arrays.asList(new Object());
-        Assert.assertFalse("List is not empty", PackageInfoPlugin.isEmpty(list));
-    }
-
-    @Test
     public void javaFilterTest() throws Exception {
         final File javaFile = temporaryFolder.newFile("a.java");
         Assert.assertTrue("JAVA_FILTER must accept a.java", PackageInfoPlugin.JAVA_FILTER.accept(javaFile));
@@ -248,15 +237,6 @@ public class PackageInfoPluginTest {
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("/de/shadowhunt/maven"));
         Assert.assertEquals("de.shadowhunt.maven", PackageInfoPlugin.path2PackageName("de/shadowhunt/maven"));
         Assert.assertEquals("", PackageInfoPlugin.path2PackageName(""));
-    }
-
-    @Test
-    public void toEmptyArrayTest() throws Exception {
-        final File[] empty = new File[0];
-        Assert.assertArrayEquals("array must match", empty, PackageInfoPlugin.toEmpty(null));
-        Assert.assertSame("array must be same", empty, PackageInfoPlugin.toEmpty(empty));
-        final File[] files = new File[1];
-        Assert.assertSame("array must be same", files, PackageInfoPlugin.toEmpty(files));
     }
 
     @Test

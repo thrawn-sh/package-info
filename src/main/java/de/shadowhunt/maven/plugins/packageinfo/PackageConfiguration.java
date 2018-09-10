@@ -49,7 +49,7 @@ public class PackageConfiguration {
 
     public boolean matches(final String packageName) {
         if (pattern == null) {
-            pattern = Pattern.compile(getRegex());
+            pattern = Pattern.compile(regex);
         }
         final Matcher matcher = pattern.matcher(packageName);
         return matcher.matches();

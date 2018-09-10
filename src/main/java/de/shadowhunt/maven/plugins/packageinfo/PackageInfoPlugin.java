@@ -25,8 +25,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -55,11 +53,7 @@ public class PackageInfoPlugin extends AbstractMojo {
         return lowerCaseName.endsWith(".java");
     };
 
-    static boolean containsFiles(final File[] files, final FileFilter filter) {
-        if (isEmpty(files)) {
-            return false;
-        }
-
+    static boolean containsFiles(final FileFilter filter, final File... files) {
         for (final File file : files) {
             if (filter.accept(file)) {
                 return true;
@@ -92,14 +86,6 @@ public class PackageInfoPlugin extends AbstractMojo {
         return false;
     }
 
-    static boolean isEmpty(@CheckForNull final File[] files) {
-        return (files == null) || (files.length == 0);
-    }
-
-    static boolean isEmpty(@CheckForNull final List<?> list) {
-        return (list == null) || list.isEmpty();
-    }
-
     static final File makeFileAbsolute(final File base, final File file) {
         if (file.isAbsolute()) {
             return file;
@@ -112,13 +98,6 @@ public class PackageInfoPlugin extends AbstractMojo {
     static String path2PackageName(final String path) {
         final String strip = StringUtils.strip(path, File.separator);
         return strip.replace(File.separatorChar, '.');
-    }
-
-    static File[] toEmpty(@CheckForNull final File[] files) {
-        if (files == null) {
-            return new File[0];
-        }
-        return files;
     }
 
     static String toRelativePath(final File root, final File file) {
@@ -164,7 +143,7 @@ public class PackageInfoPlugin extends AbstractMojo {
 
         try {
             final List<PackageConfiguration> packageConfigurations = getPackages();
-            if (isEmpty(packageConfigurations)) {
+            if ((packageConfigurations == null) || packageConfigurations.isEmpty()) {
                 log.warn("no packages give: not generating any package-info.java files");
                 return;
             }
@@ -183,7 +162,7 @@ public class PackageInfoPlugin extends AbstractMojo {
             final File absoluteOutputDirectory = makeFileAbsolute(base, directory);
             final String outputPath = absoluteOutputDirectory.getAbsolutePath();
             mavenProject.addCompileSourceRoot(outputPath);
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             throw new MojoExecutionException("could not generate package-info.java", e);
         }
     }
@@ -250,10 +229,12 @@ public class PackageInfoPlugin extends AbstractMojo {
             return;
         }
 
-        File[] children = folder.listFiles();
-        children = toEmpty(children);
+        final File[] children = folder.listFiles();
+        if (children == null) {
+            return;
+        }
 
-        if (containsFiles(children, JAVA_FILTER)) {
+        if (containsFiles(JAVA_FILTER, children)) {
             final String relativePath = toRelativePath(base, folder);
             generateDefaultPackageInfo(base, relativePath);
         }
