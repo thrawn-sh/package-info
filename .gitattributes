@@ -1,0 +1,6 @@
+# default is linux eol style
+* text=auto eol=lf
+
+*.cmd text=auto eol=crlf
+*.jar binary
+*.zip binary
