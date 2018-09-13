@@ -142,26 +142,22 @@ public class PackageInfoPlugin extends AbstractMojo {
         final Log log = getLog();
 
         try {
-            final List<PackageConfiguration> packageConfigurations = getPackages();
-            if ((packageConfigurations == null) || packageConfigurations.isEmpty()) {
+            if ((packages == null) || packages.isEmpty()) {
                 log.warn("no packages give: not generating any package-info.java files");
                 return;
             }
 
-            final MavenProject mavenProject = getProject();
-            final File base = mavenProject.getBasedir();
-            final List<String> compileSourceFolders = getCompileSourceRoots();
-            for (final String compileSourceFolder : compileSourceFolders) {
+            final File base = project.getBasedir();
+            for (final String compileSourceFolder : compileSourceRoots) {
                 final File folder = new File(compileSourceFolder);
                 final File root = makeFileAbsolute(base, folder);
                 log.debug("checking " + root + " for missing package-info.java files");
                 processFolder(root, root);
             }
 
-            final File directory = getOutputDirectory();
-            final File absoluteOutputDirectory = makeFileAbsolute(base, directory);
+            final File absoluteOutputDirectory = makeFileAbsolute(base, outputDirectory);
             final String outputPath = absoluteOutputDirectory.getAbsolutePath();
-            mavenProject.addCompileSourceRoot(outputPath);
+            project.addCompileSourceRoot(outputPath);
         } catch (final IOException e) {
             throw new MojoExecutionException("could not generate package-info.java", e);
         }
@@ -174,23 +170,19 @@ public class PackageInfoPlugin extends AbstractMojo {
         }
 
         final String filename = relativePath + File.separator + "package-info.java";
-        final List<String> compileSourceFolders = getCompileSourceRoots();
-        if (doesFileAlreadyExistInSourceRoots(filename, base, compileSourceFolders)) {
+        if (doesFileAlreadyExistInSourceRoots(filename, base, compileSourceRoots)) {
             // don't generate file in outputDirectory if it already exists in one of the compileSourceRoots
             return;
         }
 
-        final File directory = getOutputDirectory();
-        final File absoluteOutputDirectory = makeFileAbsolute(base, directory);
+        final File absoluteOutputDirectory = makeFileAbsolute(base, outputDirectory);
         final File packageInfo = new File(absoluteOutputDirectory, filename);
         createNecessaryDirectories(packageInfo);
 
-        final String sourceCodeEncoding = getEncoding();
         final String packageName = path2PackageName(relativePath);
-        final List<PackageConfiguration> packageConfigurations = getPackages();
-        for (final PackageConfiguration packageConfiguration : packageConfigurations) {
+        for (final PackageConfiguration packageConfiguration : packages) {
             if (packageConfiguration.matches(packageName)) {
-                try (Writer packageInfoWriter = new FileWriterWithEncoding(packageInfo, sourceCodeEncoding)) {
+                try (Writer packageInfoWriter = new FileWriterWithEncoding(packageInfo, encoding)) {
                     try (PrintWriter pw = new PrintWriter(packageInfoWriter)) {
                         packageConfiguration.printAnnotions(pw);
                         pw.print("package ");
@@ -202,26 +194,6 @@ public class PackageInfoPlugin extends AbstractMojo {
                 return;
             }
         }
-    }
-
-    public List<String> getCompileSourceRoots() {
-        return compileSourceRoots;
-    }
-
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public File getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public List<PackageConfiguration> getPackages() {
-        return packages;
-    }
-
-    public MavenProject getProject() {
-        return project;
     }
 
     void processFolder(final File folder, final File base) throws IOException {

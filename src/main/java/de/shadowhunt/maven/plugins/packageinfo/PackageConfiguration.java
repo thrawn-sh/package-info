@@ -39,14 +39,6 @@ public class PackageConfiguration {
      */
     private String regex = DEFAULT_REGEX;
 
-    public List<String> getAnnotations() {
-        return annotations;
-    }
-
-    public String getRegex() {
-        return regex;
-    }
-
     public boolean matches(final String packageName) {
         if (pattern == null) {
             pattern = Pattern.compile(regex);
@@ -56,7 +48,7 @@ public class PackageConfiguration {
     }
 
     public void printAnnotions(final PrintWriter pw) {
-        for (final String annotation : getAnnotations()) {
+        for (final String annotation : annotations) {
             pw.println(annotation);
         }
     }
