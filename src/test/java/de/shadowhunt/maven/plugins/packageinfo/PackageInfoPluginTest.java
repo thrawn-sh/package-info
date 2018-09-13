@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -94,22 +93,6 @@ public class PackageInfoPluginTest {
     @Test
     public void executeEmptyTest() throws Exception {
         final PackageInfoPlugin plugin = new PackageInfoPlugin();
-        plugin.execute();
-    }
-
-    @Test(expected = MojoExecutionException.class)
-    public void executeExceptionTest() throws Exception {
-        final MavenProject projectMock = Mockito.mock(MavenProject.class);
-        Mockito.when(projectMock.getBasedir()).thenThrow(IOException.class);
-
-        final PackageConfiguration configuration = new PackageConfiguration();
-        final List<String> annotations = Arrays.asList("test");
-        configuration.setAnnotations(annotations);
-        final List<PackageConfiguration> configurations = Arrays.asList(configuration);
-
-        final PackageInfoPlugin plugin = new PackageInfoPlugin();
-        plugin.setProject(projectMock);
-        plugin.setPackages(configurations);
         plugin.execute();
     }
 
