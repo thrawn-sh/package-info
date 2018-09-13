@@ -186,9 +186,12 @@
                 <configuration>
                     <excludes>
                         <exclude>**/.*</exclude>
+                        <exclude>.mvn/**</exclude>
                         <exclude>Jenkinsfile</exclude>
                         <exclude>LICENSE</exclude>
                         <exclude>README.md</exclude>
+                        <exclude>mvnw.cmd</exclude>
+                        <exclude>mvnw</exclude>
                     </excludes>
                     <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header>
                     <properties>
