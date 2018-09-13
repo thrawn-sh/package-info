@@ -4,7 +4,6 @@
 
 // Jenkins must provide the following tools
 // java-1.8.x : must reference an arbitrary jdk   1.8
-// maven-3.5.x: must reference an arbitrary maven 3.5
 pipeline {
     agent any
 
@@ -26,8 +25,8 @@ pipeline {
         stage ("Build") {
             steps {
                 timestamps {
-                    withMaven(jdk: "java-1.8.x", maven: "maven-3.5.x") {
-                        sh("mvn --update-snapshots -Dgpg.skip=true -Djarsigner.skip=true clean verify")
+                    withMaven(jdk: "java-1.8.x") {
+                        sh("./mvnw --update-snapshots -Dgpg.skip=true -Djarsigner.skip=true clean verify")
                     }
                 }
             }
