@@ -29,12 +29,12 @@
     <!-- project information {{{1 -->
     <name>Maven package-info.java Plugin</name>
     <description>Autogenerates package-info.java files with arbitrary headers</description>
-    <url>https://dev.shadowhunt.de/package-info-maven-plugin</url>
+    <url>https://gitlab.shadowhunt.de/package-info-maven-plugin</url>
     <inceptionYear>2012</inceptionYear>
 
     <organization>
         <name>shadowhunt</name>
-        <url>https://dev.shadowhunt.de</url>
+        <url>https://gitlab.shadowhunt.de</url>
     </organization>
 
     <licenses>
@@ -49,7 +49,7 @@
         <developer>
             <id>thrawn</id>
             <name>Alexander Dreweke</name>
-            <email>thrawn@shadowhunt.de</email>
+            <email>alexander@dreweke.net</email>
             <timezone>Europe/Berlin</timezone>
         </developer>
     </developers>
@@ -57,10 +57,10 @@
 
     <!-- environment information {{{1 -->
     <scm>
-        <connection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin.git</connection>
-        <developerConnection>scm:git:https://scm.shadowhunt.de/package-info-maven-plugin.git</developerConnection>
+        <connection>scm:git:https://gitlab.shadowhunt.de/open-source/package-info-maven-plugin.git</connection>
+        <developerConnection>scm:git:https://gitlab.shadowhunt.de/open-source/package-info-maven-plugin.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/thrawn-sh/package-info</url>
+        <url>https://gitlab.shadowhunt.de/open-source/package-info-maven-plugin</url>
     </scm>
 
     <distributionManagement>
@@ -69,15 +69,6 @@
             <name>Sonatype (Maven Central) Staging Repository</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
-        <snapshotRepository>
-            <id>shadowhunt</id>
-            <name>Shadowhunt Local Snapshot Repository</name>
-            <url>https://maven.shadowhunt.de/local-snapshot</url>
-        </snapshotRepository>
-        <site>
-            <id>shadowhunt.site</id>
-            <url>scp://dev.shadowhunt.de/sites/package-info-maven-plugin</url>
-        </site>
     </distributionManagement>
     <!-- }}}1 -->
 
