@@ -1,7 +1,12 @@
-*.bak
-*.releaseBackup
-.classpath
-.project
-.settings
+# general maven excludes
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+buildNumber.properties
+dependency-reduced-pom.xml
+pom.xml.next
+pom.xml.releaseBackup
+pom.xml.tag
+pom.xml.versionsBackup
 release.properties
-target
+target/
+# project excludes
